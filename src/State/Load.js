@@ -1,14 +1,16 @@
-/* global game, Phaser */
+/* global phsr, Phaser */
 module.exports = {
     preload: function() {
-        game.input.maxPointers = 1;
-        game.scale.pageAlignHorizontally = true;
-        game.scale.pageAlignVertically = true;
-        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        game.load.baseURL = './assets/';
-        game.load.image('pix');
+        phsr.input.maxPointers = 1;
+        phsr.scale.pageAlignHorizontally = true;
+        phsr.scale.pageAlignVertically = true;
+        phsr.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        phsr.load.baseURL = './assets/';
+        phsr.load.image('pix');
+        phsr.load.image('planet');
+        phsr.load.image('aura');
     },
     create: function() {
-        game.state.start('Main');
+        phsr.state.start('Main');
     }
 };
