@@ -1,5 +1,5 @@
 /* global Phaser */
-var phsr = new Phaser.Game(1200, 800);
+var phsr = new Phaser.Game(1200, 1000);
 var print = console.log.bind(console);
 global.phsr = phsr;
 global.game = {};
