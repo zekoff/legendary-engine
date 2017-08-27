@@ -5,6 +5,7 @@ var Link = function(start, end) {
     this.end = game.nodes.getAt(end);
     game.links.add(this);
     this.height = 3;
+    this.anchor.set(0,0.5);
     this.x = this.start.x;
     this.y = this.start.y;
     this.width = Phaser.Math.distance(this.start.x, this.start.y, this.end.x, this.end.y);

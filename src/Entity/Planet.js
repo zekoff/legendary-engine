@@ -1,6 +1,7 @@
 /* global Phaser, phsr, game */
-var Planet = function(x, y) {
+var Planet = function(id, x, y) {
     Phaser.Sprite.call(this, phsr, x, y, 'planet');
+    this.id = id;
     this.height = 100;
     this.width = 100;
     this.anchor.set(0.5);
@@ -14,6 +15,8 @@ var Planet = function(x, y) {
         a.width = 200;
         a.anchor.set(0.5);
     }, this);
+    this.inputEnabled = true;
+    this.events.onInputDown.add(function() {}, this);
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
