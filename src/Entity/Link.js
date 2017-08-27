@@ -1,6 +1,7 @@
 /* global Phaser, phsr, game */
 var Link = function(start, end) {
     Phaser.Image.call(this, phsr, 0, 0, 'pix');
+    this.pair = [start, end];
     this.start = game.nodes.getAt(start);
     this.end = game.nodes.getAt(end);
     game.links.add(this);

@@ -16,9 +16,42 @@ var Planet = function(id, x, y) {
         a.anchor.set(0.5);
     }, this);
     this.inputEnabled = true;
-    this.events.onInputDown.add(function() {}, this);
+    this.events.onInputDown.add(function() {
+        print(this.id);
+        if (!game.selectedPlanet) {
+            game.selectedPlanet = this;
+            print('new planet selected: ', game.selectedPlanet.id);
+        }
+        else {
+            if (this.isLinkedTo(game.selectedPlanet.id))
+                game.selectedPlanet.sendShips(this.id);
+            game.selectedPlanet = null;
+        }
+    }, this);
+    this.orbitedBy = [];
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
+Planet.prototype.sendShips = function(planetId) {
+    var targetPlanet = game.nodes.getAt(planetId);
+    if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
+    this.orbitedBy.forEach(function(ship) {
+        ship.planetOrbited = null;
+        var moveTween = phsr.tweens.create(ship);
+        moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
+        moveTween.onComplete.add(function(ship) {
+            ship.enterOrbit(planetId);
+        });
+        moveTween.start();
+    }, this);
+    this.orbitedBy = [];
+};
+Planet.prototype.isLinkedTo = function(targetPlanetId) {
+    var i;
+    for (i = 0; i < game.links.length; i++)
+        if (game.links.getAt(i).pair.includes(this.id) && game.links.getAt(i).pair.includes(targetPlanetId))
+            return true;
+    return false;
+};
 
 module.exports = Planet;
