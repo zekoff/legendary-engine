@@ -33,20 +33,17 @@ var Planet = function(id, x, y) {
                 .to({ width: 200, height: 200, alpha: 0.5 }, 1000,
                     Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
             game.selectedPlanet = this;
-            game.hud.setSelectedPlanet(game.selectedPlanet);
-            print('new planet selected: ', game.selectedPlanet.id);
         }
         else {
             if (this.isLinkedTo(game.selectedPlanet.id))
                 game.selectedPlanet.sendShips(this.id);
-                game.selectionImageTween.stop();
-                game.selectionImage.destroy();
+            game.selectionImageTween.stop();
+            game.selectionImage.destroy();
             game.selectedPlanet = null;
-            game.hud.setSelectedPlanet(game.selectedPlanet);
         }
     }, this);
     this.orbitedBy = [];
-    
+
     this.timeTillShipSpawn = this.shipProductionRate = 1; // produce ship every X seconds
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
@@ -73,7 +70,7 @@ Planet.prototype.isLinkedTo = function(targetPlanetId) {
             return true;
     return false;
 };
-Planet.prototype.update =function(){
+Planet.prototype.update = function() {
     this.timeTillShipSpawn -= phsr.time.physicsElapsed;
     if (this.timeTillShipSpawn <= 0) {
         new Ship(this.id);

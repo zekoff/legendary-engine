@@ -2,6 +2,7 @@
 module.exports = {
     preload: function() {
         phsr.input.maxPointers = 1;
+        phsr.canvas.oncontextmenu = function(e) { e.preventDefault(); };
         phsr.scale.pageAlignHorizontally = true;
         phsr.scale.pageAlignVertically = true;
         phsr.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
