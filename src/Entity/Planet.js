@@ -44,9 +44,9 @@ var Planet = function(id, x, y, owner) {
         }
     }, this);
     this.orbitedBy = {};
-    this.orbitedBy.playerShips = [];
-    this.orbitedBy.enemyShips = [];
-    this.orbitedBy.neutralShips = [];
+    this.orbitedBy.playerShips = phsr.add.group();
+    this.orbitedBy.enemyShips = phsr.add.group();
+    this.orbitedBy.neutralShips = phsr.add.group();
 
     this.timeTillShipSpawn = this.shipProductionRate = 1; // produce ship every X seconds
 };
@@ -55,7 +55,10 @@ Planet.constructor = Planet;
 Planet.prototype.sendShips = function(planetId) {
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
+    var count = 0;
+    print('planet fleet size: ' + this.orbitedBy.playerShips.length);
     this.orbitedBy.playerShips.forEach(function(ship) {
+        count++;
         ship.planetOrbited = null;
         var moveTween = phsr.tweens.create(ship);
         moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
@@ -64,7 +67,8 @@ Planet.prototype.sendShips = function(planetId) {
         });
         moveTween.start();
     }, this);
-    this.orbitedBy.playerShips = [];
+    print(count + ' sent');
+    phsr.world.addMultiple(this.orbitedBy.playerShips);
 };
 Planet.prototype.isLinkedTo = function(targetPlanetId) {
     var i;
@@ -94,6 +98,22 @@ Planet.prototype.update = function() {
         new Ship(this.id);
         this.timeTillShipSpawn = this.shipProductionRate;
     }
+
+    // Ship combat
+    var i = 0,
+        battles = 0;
+    // // PLAYER-ENEMY
+    battles = Math.min(this.orbitedBy.playerShips.length, this.orbitedBy.enemyShips.length);
+    if (battles > 0) {
+        for (i = 0; i < battles; i++) {
+            /// TODO destroy is removing the sprites from the group
+            this.orbitedBy.playerShips.getAt(0).destroy();
+            this.orbitedBy.enemyShips.getAt(0).destroy();
+            print('combat');
+        }
+    }
+    // PLAYER-NEUTRAL
+    // ENEMY-NEUTRAL
 };
 
 module.exports = Planet;

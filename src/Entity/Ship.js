@@ -20,7 +20,7 @@ var Ship = function(planetId) {
     }
     this.anchor.set(0.5);
     this.angle = phsr.rnd.between(0, 360);
-    this.x = this.orbitDistance;
+    this.x = this.planetOrbited.x;
     this.y = this.planetOrbited.y;
     this.orbitSpeed = phsr.rnd.between(10, 40);
     this.orbitDirection = phsr.rnd.pick([-1, 1]);
@@ -34,7 +34,7 @@ Ship.prototype.update = function() {
 };
 Ship.prototype.enterOrbit = function(planetId) {
     this.planetOrbited = game.nodes.getAt(planetId);
-    this.planetOrbited.orbitedBy[this.owner.toLowerCase() + "Ships"].push(this);
+    this.planetOrbited.orbitedBy[this.owner.toLowerCase() + "Ships"].add(this);
     this.offsetPoint = { x: this.planetOrbited.x + this.orbitDistance, y: this.planetOrbited.y };
 };
 
