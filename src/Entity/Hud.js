@@ -43,7 +43,7 @@ Hud.constructor = Hud;
 Hud.prototype.setSelectedPlanet = function(planet) {
     this.planetText.text = "Selected Planet: " + (planet ? planet.id : "NONE");
     this.productionText.text = "Production Level: " + (planet ? planet.shipProductionRate : "NONE");
-    this.orbitingText.text = "Ships in Orbit: " + (planet ? planet.orbitedBy.length : "NONE");
+    this.orbitingText.text = "Ships in Orbit: " + (planet ? planet.orbitedBy.playerShips.length : "NONE");
     this.moneyText.text = "Money: " + game.money;
 };
 

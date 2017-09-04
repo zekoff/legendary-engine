@@ -6,8 +6,8 @@ var Ship = function(planetId) {
     this.height = 4;
     this.width = 4;
     this.orbitDistance = phsr.rnd.between(60, 90);
+    this.owner = game.nodes.getAt(planetId).owner;
     this.enterOrbit(planetId);
-    this.owner = this.planetOrbited.owner;
     switch (this.owner) {
         case "PLAYER":
             this.tint = 0x0000ff;
@@ -34,7 +34,7 @@ Ship.prototype.update = function() {
 };
 Ship.prototype.enterOrbit = function(planetId) {
     this.planetOrbited = game.nodes.getAt(planetId);
-    this.planetOrbited.orbitedBy.push(this);
+    this.planetOrbited.orbitedBy[this.owner.toLowerCase() + "Ships"].push(this);
     this.offsetPoint = { x: this.planetOrbited.x + this.orbitDistance, y: this.planetOrbited.y };
 };
 

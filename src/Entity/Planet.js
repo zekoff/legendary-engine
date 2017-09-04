@@ -43,7 +43,10 @@ var Planet = function(id, x, y, owner) {
             game.selectedPlanet = null;
         }
     }, this);
-    this.orbitedBy = [];
+    this.orbitedBy = {};
+    this.orbitedBy.playerShips = [];
+    this.orbitedBy.enemyShips = [];
+    this.orbitedBy.neutralShips = [];
 
     this.timeTillShipSpawn = this.shipProductionRate = 1; // produce ship every X seconds
 };
@@ -52,7 +55,7 @@ Planet.constructor = Planet;
 Planet.prototype.sendShips = function(planetId) {
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
-    this.orbitedBy.forEach(function(ship) {
+    this.orbitedBy.playerShips.forEach(function(ship) {
         ship.planetOrbited = null;
         var moveTween = phsr.tweens.create(ship);
         moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
@@ -61,7 +64,7 @@ Planet.prototype.sendShips = function(planetId) {
         });
         moveTween.start();
     }, this);
-    this.orbitedBy = [];
+    this.orbitedBy.playerShips = [];
 };
 Planet.prototype.isLinkedTo = function(targetPlanetId) {
     var i;
