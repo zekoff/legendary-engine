@@ -1,14 +1,14 @@
 module.exports = {
     planets: [
-        { x: 150, y: 150 },
-        { x: 250, y: 400 },
-        { x: 200, y: 700 },
-        { x: 500, y: 250 },
-        { x: 550, y: 550 },
-        { x: 800, y: 650 },
-        { x: 750, y: 300 },
-        { x: 1050, y: 200 },
-        { x: 1000, y: 450 }
+        { x: 150, y: 150, owner: null },
+        { x: 250, y: 400, owner: "PLAYER" },
+        { x: 200, y: 700, owner: null },
+        { x: 500, y: 250, owner: null },
+        { x: 550, y: 550, owner: null },
+        { x: 800, y: 650, owner: "ENEMY" },
+        { x: 750, y: 300, owner: null },
+        { x: 1050, y: 200, owner: null },
+        { x: 1000, y: 450, owner: null }
     ],
     links: [
         [0, 1],

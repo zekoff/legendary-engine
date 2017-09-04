@@ -1,13 +1,14 @@
 /* global Phaser, phsr, game */
 var Ship = require('./Ship');
 
-var Planet = function(id, x, y) {
+var Planet = function(id, x, y, owner) {
     Phaser.Sprite.call(this, phsr, x, y, 'planet');
     this.id = id;
     this.height = 100;
     this.width = 100;
     this.anchor.set(0.5);
     game.nodes.add(this);
+    this.setOwner(owner);
     [{ name: 'military', tint: 0xff0000 }, { name: 'commerce', tint: 0x00ff00 },
         { name: 'research', tint: 0x0000ff }
     ].forEach(function(e) {
@@ -69,6 +70,20 @@ Planet.prototype.isLinkedTo = function(targetPlanetId) {
             .pair.includes(targetPlanetId))
             return true;
     return false;
+};
+Planet.prototype.setOwner = function(owner) {
+    if (!owner) owner = "NEUTRAL";
+    switch (owner) {
+        case "PLAYER":
+            this.tint = 0x8080ff;
+            break;
+        case "ENEMY":
+            this.tint = 0xff8080;
+            break;
+        default:
+            this.tint = 0xffffff;
+    }
+    this.owner = owner;
 };
 Planet.prototype.update = function() {
     this.timeTillShipSpawn -= phsr.time.physicsElapsed;

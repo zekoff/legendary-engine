@@ -15,11 +15,12 @@ module.exports = {
         game.hud = new Hud();
         var i = 0;
         SystemDefinition.planets.forEach(function(planet) {
-            game.nodes.add(new Planet(i++, planet.x, planet.y));
+            game.nodes.add(new Planet(i++, planet.x, planet.y, planet.owner));
         });
         SystemDefinition.links.forEach(function(link) {
             game.links.add(new Link(link[0], link[1]));
         });
+        i = 0;
         game._money = 0;
         Object.defineProperty(game, 'money', {
             get: function() {

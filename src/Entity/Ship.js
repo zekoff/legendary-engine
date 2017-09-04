@@ -7,6 +7,17 @@ var Ship = function(planetId) {
     this.width = 4;
     this.orbitDistance = phsr.rnd.between(60, 90);
     this.enterOrbit(planetId);
+    this.owner = this.planetOrbited.owner;
+    switch (this.owner) {
+        case "PLAYER":
+            this.tint = 0x0000ff;
+            break;
+        case "ENEMY":
+            this.tint = 0xff0000;
+            break;
+        default:
+            this.tint = 0x808080;
+    }
     this.anchor.set(0.5);
     this.angle = phsr.rnd.between(0, 360);
     this.x = this.orbitDistance;
