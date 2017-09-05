@@ -48,7 +48,8 @@ var Planet = function(id, x, y, owner) {
     this.orbitedBy.enemyShips = phsr.add.group();
     this.orbitedBy.neutralShips = phsr.add.group();
 
-    this.timeTillShipSpawn = this.shipProductionRate = 1; // produce ship every X seconds
+    this.timeTillShipSpawn = this.shipProductionRate =
+        this.owner == "NEUTRAL" ? 2 : 1; // produce ship every X seconds
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
@@ -56,7 +57,6 @@ Planet.prototype.sendShips = function(planetId) {
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
     var count = 0;
-    print('planet fleet size: ' + this.orbitedBy.playerShips.length);
     this.orbitedBy.playerShips.forEach(function(ship) {
         count++;
         ship.planetOrbited = null;
@@ -67,7 +67,6 @@ Planet.prototype.sendShips = function(planetId) {
         });
         moveTween.start();
     }, this);
-    print(count + ' sent');
     phsr.world.addMultiple(this.orbitedBy.playerShips);
 };
 Planet.prototype.isLinkedTo = function(targetPlanetId) {
@@ -99,21 +98,46 @@ Planet.prototype.update = function() {
         this.timeTillShipSpawn = this.shipProductionRate;
     }
 
-    // Ship combat
+    // SHIP COMBAT
     var i = 0,
         battles = 0;
-    // // PLAYER-ENEMY
+    // Player/Enemy
     battles = Math.min(this.orbitedBy.playerShips.length, this.orbitedBy.enemyShips.length);
     if (battles > 0) {
         for (i = 0; i < battles; i++) {
-            /// TODO destroy is removing the sprites from the group
+            /// TODO make the ships visually enter combat with each other
             this.orbitedBy.playerShips.getAt(0).destroy();
             this.orbitedBy.enemyShips.getAt(0).destroy();
-            print('combat');
         }
     }
-    // PLAYER-NEUTRAL
-    // ENEMY-NEUTRAL
+    // Enemy/Neutral
+    battles = Math.min(this.orbitedBy.enemyShips.length, this.orbitedBy.neutralShips.length);
+    if (battles > 0) {
+        for (i = 0; i < battles; i++) {
+            this.orbitedBy.enemyShips.getAt(0).destroy();
+            this.orbitedBy.neutralShips.getAt(0).destroy();
+        }
+    }
+    // Player/Neutral
+    battles = Math.min(this.orbitedBy.playerShips.length, this.orbitedBy.neutralShips.length);
+    if (battles > 0) {
+        for (i = 0; i < battles; i++) {
+            this.orbitedBy.playerShips.getAt(0).destroy();
+            this.orbitedBy.neutralShips.getAt(0).destroy();
+        }
+    }
+
+    // OWNERSHIP TRANSITION
+    // Player
+    if (this.orbitedBy.playerShips.length > 0 &&
+        this.owner != "PLAYER" &&
+        this.orbitedBy.enemyShips.length == 0 &&
+        this.orbitedBy.neutralShips.length == 0) this.setOwner("PLAYER");
+    // Enemy
+    if (this.orbitedBy.enemyShips.length > 0 &&
+        this.owner != "ENEMY" &&
+        this.orbitedBy.playerShips.length == 0 &&
+        this.orbitedBy.neutralShips.length == 0) this.setOwner("ENEMY");
 };
 
 module.exports = Planet;
