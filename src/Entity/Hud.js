@@ -29,7 +29,8 @@ var Hud = function() {
     this.productionButton.events.onInputUp.add(function() {
         if (game.selectedPlanet &&
             game.selectedPlanet.shipProductionRate > 0.25 &&
-            game.money >= 1000) {
+            game.money >= 1000 &&
+            game.selectedPlanet.owner == "PLAYER") {
             print('boosting production');
             game.money -= 1000;
             game.selectedPlanet.shipProductionRate -= 0.25;

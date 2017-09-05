@@ -48,8 +48,19 @@ var Planet = function(id, x, y, owner) {
     this.orbitedBy.enemyShips = phsr.add.group();
     this.orbitedBy.neutralShips = phsr.add.group();
 
-    this.timeTillShipSpawn = this.shipProductionRate =
-        this.owner == "NEUTRAL" ? 2 : 1; // produce ship every X seconds
+    var rate = 0;
+    switch (this.owner) {
+        case "PLAYER":
+            rate = 1;
+            break;
+        case "ENEMY":
+            rate = .1;
+            break;
+        case "NEUTRAL":
+            rate = 2;
+            break;
+    }
+    this.timeTillShipSpawn = this.shipProductionRate = rate; // produce ship every X seconds
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
@@ -138,6 +149,9 @@ Planet.prototype.update = function() {
         this.owner != "ENEMY" &&
         this.orbitedBy.playerShips.length == 0 &&
         this.orbitedBy.neutralShips.length == 0) this.setOwner("ENEMY");
+
+    // MONEY
+    if (this.owner == "PLAYER") game.money += phsr.time.physicsElapsed * 15;
 };
 
 module.exports = Planet;
