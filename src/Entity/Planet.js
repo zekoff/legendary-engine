@@ -36,8 +36,16 @@ var Planet = function(id, x, y, owner) {
             game.selectedPlanet = this;
         }
         else {
-            if (this.isLinkedTo(game.selectedPlanet.id))
-                game.selectedPlanet.sendShips(this.id);
+            if (game.hud.selectedLayer == "military")
+                if (this.isLinkedTo(game.selectedPlanet.id) &&
+                    game.selectedPlanet.id != this.id)
+                    game.selectedPlanet.sendShips(this.id);
+            if (game.hud.selectedLayer == "commerce" &&
+                this.isLinkedTo(game.selectedPlanet.id) &&
+                this.owner == "PLAYER" &&
+                game.selectedPlanet.id != this.id &&
+                game.money >= 500)
+                game.selectedPlanet.sendTradeMission(this.id);
             game.selectionImageTween.stop();
             game.selectionImage.destroy();
             game.selectedPlanet = null;
@@ -61,15 +69,14 @@ var Planet = function(id, x, y, owner) {
             break;
     }
     this.timeTillShipSpawn = this.shipProductionRate = rate; // produce ship every X seconds
+    this.taxRate = 15; // money per second
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
 Planet.prototype.sendShips = function(planetId) {
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
-    var count = 0;
     this.orbitedBy.playerShips.forEach(function(ship) {
-        count++;
         ship.planetOrbited = null;
         var moveTween = phsr.tweens.create(ship);
         moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
@@ -79,6 +86,23 @@ Planet.prototype.sendShips = function(planetId) {
         moveTween.start();
     }, this);
     phsr.world.addMultiple(this.orbitedBy.playerShips);
+};
+Planet.prototype.sendTradeMission = function(planetId) {
+    game.money -= 500;
+    var targetPlanet = game.nodes.getAt(planetId);
+    if (targetPlanet.id != planetId) print("ERROR");
+    var tradeVessel = phsr.add.sprite(this.x, this.y, 'pix');
+    tradeVessel.anchor.set(0.5);
+    tradeVessel.height = 7;
+    tradeVessel.width = 7;
+    tradeVessel.tint = 0x00ff00;
+    var t = phsr.tweens.create(tradeVessel);
+    t.to({ x: targetPlanet.x, y: targetPlanet.y }, 5000);
+    t.onComplete.add(function() {
+        targetPlanet.taxRate += 5;
+        tradeVessel.destroy();
+    });
+    t.start();
 };
 Planet.prototype.isLinkedTo = function(targetPlanetId) {
     var i;
@@ -151,7 +175,7 @@ Planet.prototype.update = function() {
         this.orbitedBy.neutralShips.length == 0) this.setOwner("ENEMY");
 
     // MONEY
-    if (this.owner == "PLAYER") game.money += phsr.time.physicsElapsed * 15;
+    if (this.owner == "PLAYER") game.money += phsr.time.physicsElapsed * this.taxRate;
 };
 
 module.exports = Planet;

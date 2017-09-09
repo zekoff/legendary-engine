@@ -33,6 +33,9 @@ var Hud = function() {
     this.moneyText = phsr.add.text(5, 95, "Money: " + game.money, hudFont);
     this.add(this.moneyText);
 
+    this.taxText = phsr.add.text(5, 125, "TAX RATE", hudFont);
+    this.add(this.taxText);
+
     this.productionButton = phsr.add.image(600, 0, 'pix');
     this.productionButton.tint = 0x00ff00;
     this.productionButton.height = 50;
@@ -74,6 +77,7 @@ Hud.prototype.setSelectedPlanet = function(planet) {
     this.productionText.text = "Production Level: " + (planet ? planet.shipProductionRate : "NONE");
     this.orbitingText.text = "Ships in Orbit: " + (planet ? planet.orbitedBy.playerShips.length : "NONE");
     this.moneyText.text = "Money: " + game.money;
+    this.taxText.text = "Tax Rate: " + (planet ? planet.taxRate : "NONE");
 };
 Hud.prototype.setSelectedLayer = function(layer) {
     var button = this.getByName(layer.name);
@@ -83,7 +87,7 @@ Hud.prototype.setSelectedLayer = function(layer) {
         this.selectedLayer = null;
         this.bg.tint = 0xffffff;
         t = phsr.tweens.create(button);
-        t.to({ width: 80 }, 200);
+        t.to({ width: 80 }, 100);
         t.onStart.add(function() { game.hud.ignoreChildInput = true; });
         t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
         t.start();
@@ -98,7 +102,7 @@ Hud.prototype.setSelectedLayer = function(layer) {
     t.start();
     layers.filter(function(e) { return e.name != layer.name; }, this)
         .forEach(function(e) {
-            phsr.tweens.create(this.getByName(e.name)).to({ width: 80 }, 200, null, true);
+            phsr.tweens.create(this.getByName(e.name)).to({ width: 80 }, 100, null, true);
         }, this);
 };
 
