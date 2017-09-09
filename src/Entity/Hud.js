@@ -83,12 +83,10 @@ Hud.prototype.setSelectedLayer = function(layer) {
         t.onStart.add(function() { game.hud.ignoreChildInput = true; });
         t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
         t.start();
-        print('selected layer: ', this.selectedLayer);
         return;
     }
-    // activate new layer
     this.selectedLayer = layer.name;
-    // TODO this.bg.tint = layer.color;
+    this.bg.tint = mixColors(layer.color, 0xffffff, 80);
     t = phsr.tweens.create(button);
     t.to({ width: 120 }, 200);
     t.onStart.add(function() { game.hud.ignoreChildInput = true; });
@@ -99,7 +97,14 @@ Hud.prototype.setSelectedLayer = function(layer) {
         .forEach(function(e) {
             phsr.tweens.create(this.getByName(e.name)).to({ width: 80 }, 200, null, true);
         }, this);
-    print('selected layer: ', this.selectedLayer);
+};
+
+var mixColors = function(a, b, weight) {
+    // weight is how much the blend should favor B. 0 = all A, 100 = all B
+    if (weight === undefined) weight = 50;
+    var A = Phaser.Color.getRGB(a);
+    var B = Phaser.Color.getRGB(b);
+    return Phaser.Color.interpolateRGB(A.r, A.g, A.b, B.r, B.g, B.b, 100, weight);
 };
 
 module.exports = Hud;
