@@ -1,10 +1,14 @@
 /* global Phaser, phsr, game */
 var HEIGHT = 1000;
 var WIDTH = 1200;
-var layers = [{ name: 'military', color: 0xff0000 },
+var layers = [
+    { name: 'military', color: 0xff0000 },
     { name: 'commerce', color: 0x00ff00 },
     { name: 'research', color: 0x0000ff }
 ];
+var hudFont = {
+    fontSize: '16pt'
+};
 
 var Hud = function() {
     Phaser.Group.call(this, phsr);
@@ -17,16 +21,16 @@ var Hud = function() {
 
     this.selectedLayer = null;
 
-    this.planetText = phsr.add.text(5, 5, "PLANET");
+    this.planetText = phsr.add.text(5, 5, "PLANET", hudFont);
     this.add(this.planetText);
 
-    this.productionText = phsr.add.text(5, 45, "PRODUCTION");
+    this.productionText = phsr.add.text(5, 35, "PRODUCTION", hudFont);
     this.add(this.productionText);
 
-    this.orbitingText = phsr.add.text(5, 85, "SHIPS");
+    this.orbitingText = phsr.add.text(5, 65, "SHIPS", hudFont);
     this.add(this.orbitingText);
 
-    this.moneyText = phsr.add.text(5, 125, "Money: " + game.money);
+    this.moneyText = phsr.add.text(5, 95, "Money: " + game.money, hudFont);
     this.add(this.moneyText);
 
     this.productionButton = phsr.add.image(600, 0, 'pix');
@@ -92,7 +96,6 @@ Hud.prototype.setSelectedLayer = function(layer) {
     t.onStart.add(function() { game.hud.ignoreChildInput = true; });
     t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
     t.start();
-    // collapse old layers, if applicable
     layers.filter(function(e) { return e.name != layer.name; }, this)
         .forEach(function(e) {
             phsr.tweens.create(this.getByName(e.name)).to({ width: 80 }, 200, null, true);
