@@ -96,7 +96,7 @@ Hud.prototype.setSelectedLayer = function(layer) {
     this.selectedLayer = layer.name;
     this.bg.tint = mixColors(layer.color, 0xffffff, 80);
     t = phsr.tweens.create(button);
-    t.to({ width: 120 }, 200);
+    t.to({ width: 120 }, 100);
     t.onStart.add(function() { game.hud.ignoreChildInput = true; });
     t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
     t.start();

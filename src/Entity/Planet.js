@@ -21,7 +21,16 @@ var Planet = function(id, x, y, owner) {
         a.anchor.set(0.5);
     }, this);
     this.inputEnabled = true;
-    this.events.onInputDown.add(function() {
+    this.events.onInputOver.add(function(target) {
+        game.hud.lastOverPlanet = this;
+    }, this);
+    this.events.onInputUp.add(function() {
+        if (game.hud.lastOverPlanet && this.id != game.hud.lastOverPlanet.id)
+            print('dragged between 2 planets!');
+        if (game.hud.lastOverPlanet && this.id != game.hud.lastOverPlanet.id &&
+            this.isLinkedTo(game.hud.lastOverPlanet.id))
+            print('dragged between 2 connected planets!');
+        print(this.id, " up");
         if (!game.selectedPlanet) {
             game.selectionImage = phsr.add.image(this.x, this.y, 'planet');
             game.selectionLayer.add(game.selectionImage);
@@ -50,6 +59,7 @@ var Planet = function(id, x, y, owner) {
             game.selectionImage.destroy();
             game.selectedPlanet = null;
         }
+        game.hud.lastOverPlanet = null;
     }, this);
     this.orbitedBy = {};
     this.orbitedBy.playerShips = phsr.add.group();
