@@ -91,6 +91,9 @@ Hud.prototype.setSelectedLayer = function(layer) {
         t.onStart.add(function() { game.hud.ignoreChildInput = true; });
         t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
         t.start();
+        layers.forEach(function(layer) {
+            phsr.tweens.create(game.layers[layer.name]).to({ alpha: 0.1 }, 100, null, true);
+        }, this);
         return;
     }
     this.selectedLayer = layer.name;
@@ -100,9 +103,21 @@ Hud.prototype.setSelectedLayer = function(layer) {
     t.onStart.add(function() { game.hud.ignoreChildInput = true; });
     t.onComplete.add(function() { game.hud.ignoreChildInput = false; });
     t.start();
+    var twn = phsr.tweens.create(game.layers[layer.name]);
+    twn.to({ alpha: 1 }, 100);
+    twn.onStart.add(function() {
+        print('starting layer tween to alpha 1');
+        print(game.layers[layer.name].alpha);
+    });
+    twn.onComplete.add(function() {
+        print('completed layer tween to alpha 1');
+        print(game.layers[layer.name].alpha);
+    });
+    twn.start();
     layers.filter(function(e) { return e.name != layer.name; }, this)
         .forEach(function(e) {
             phsr.tweens.create(this.getByName(e.name)).to({ width: 80 }, 100, null, true);
+            phsr.tweens.create(game.layers[e.name]).to({ alpha: 0.1 }, 100, null, true);
         }, this);
 };
 

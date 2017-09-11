@@ -22,25 +22,34 @@ var Planet = function(id, x, y, owner) {
     }, this);
     this.inputEnabled = true;
     this.events.onInputOver.add(function(target) {
+        print('over planet ', this.id);
         game.hud.lastOverPlanet = this;
     }, this);
+    this.events.onInputOut.add(function() {
+        print('out of planet ', this.id);
+    }, this);
     this.events.onInputUp.add(function() {
+        print('input up on planet ', this.id);
         if (game.hud.lastOverPlanet && this.id != game.hud.lastOverPlanet.id)
             print('dragged between 2 planets!');
         if (game.hud.lastOverPlanet && this.id != game.hud.lastOverPlanet.id &&
-            this.isLinkedTo(game.hud.lastOverPlanet.id))
+            this.isLinkedTo(game.hud.lastOverPlanet.id)) {
             print('dragged between 2 connected planets!');
-        print(this.id, " up");
+            if (game.hud.selectedLayer) {
+                var link = this.getLinkBetween(this, game.hud.lastOverPlanet);
+                link.addLink(game.hud.selectedLayer);
+            }
+        }
         if (!game.selectedPlanet) {
             game.selectionImage = phsr.add.image(this.x, this.y, 'planet');
             game.selectionLayer.add(game.selectionImage);
-            game.selectionImage.tint = 0xff0000;
-            game.selectionImage.width = 150;
-            game.selectionImage.height = 150;
-            game.selectionImage.alpha = 0.3;
+            game.selectionImage.tint = 0x8080ff;
+            game.selectionImage.width = 200;
+            game.selectionImage.height = 200;
+            game.selectionImage.alpha = 0.6;
             game.selectionImage.anchor.set(0.5);
             game.selectionImageTween = phsr.tweens.create(game.selectionImage)
-                .to({ width: 200, height: 200, alpha: 0.5 }, 1000,
+                .to({ width: 250, height: 250, alpha: 0.4 }, 1000,
                     Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
             game.selectedPlanet = this;
         }
@@ -121,6 +130,14 @@ Planet.prototype.isLinkedTo = function(targetPlanetId) {
             .pair.includes(targetPlanetId))
             return true;
     return false;
+};
+Planet.prototype.getLinkBetween = function(a, b) {
+    var i;
+    for (i = 0; i < game.links.length; i++)
+        if (game.links.getAt(i).pair.includes(a.id) && game.links.getAt(i)
+            .pair.includes(b.id))
+            return game.links.getAt(i);
+    return null;
 };
 Planet.prototype.setOwner = function(owner) {
     if (!owner) owner = "NEUTRAL";
