@@ -37,7 +37,10 @@ var Planet = function(id, x, y, owner) {
             print('dragged between 2 connected planets!');
             if (game.hud.selectedLayer) {
                 var link = this.getLinkBetween(this, game.hud.lastOverPlanet);
-                link.addLink(game.hud.selectedLayer);
+                if (game.hud.selectedLayer == 'military')
+                    link.addLink('military', this, game.hud.lastOverPlanet);
+                else
+                    link.addLink(game.hud.selectedLayer);
             }
         }
         if (!game.selectedPlanet) {
@@ -92,10 +95,13 @@ var Planet = function(id, x, y, owner) {
 };
 Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.constructor = Planet;
-Planet.prototype.sendShips = function(planetId) {
+Planet.prototype.sendShips = function(planetId, limit) {
+    if (!limit) limit = this.orbitedBy.playerShips.length;
+    var shipsSent = 0;
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR: planet ID mismatch");
     this.orbitedBy.playerShips.forEach(function(ship) {
+        if (shipsSent++ > limit) return;
         ship.planetOrbited = null;
         var moveTween = phsr.tweens.create(ship);
         moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
@@ -203,6 +209,22 @@ Planet.prototype.update = function() {
 
     // MONEY
     if (this.owner == "PLAYER") game.money += phsr.time.physicsElapsed * this.taxRate;
+
+    // PASSIVE SHIP TRANSIT
+    // Military
+    // get military links out from this planet
+    game.links.children.filter(function(link) { return link['military']; }, this)
+        .filter(function(link) { return link['military'].startPlanet == this; }, this)
+        .forEach(function(link) {
+            var mLink = link['military'];
+            mLink.passiveTimer -= phsr.time.physicsElapsed;
+            if (mLink.passiveTimer <= 0) {
+                mLink.passiveTimer = mLink.maxPassiveTimer;
+                if (this.orbitedBy.playerShips.length > 0)
+                    this.sendShips(mLink.endPlanet.id, 1);
+            }
+        }, this);
+    // Trade
 };
 
 module.exports = Planet;

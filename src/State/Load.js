@@ -10,6 +10,7 @@ module.exports = {
         phsr.load.image('pix');
         phsr.load.image('planet');
         phsr.load.image('aura');
+        phsr.load.image('arrow');
     },
     create: function() {
         phsr.state.start('Main');

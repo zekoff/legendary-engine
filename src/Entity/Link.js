@@ -24,10 +24,15 @@ var Link = function(start, end) {
 };
 Link.prototype = Object.create(Phaser.Group.prototype);
 Link.constructor = Link;
-Link.prototype.addLink = function(layerName) {
+Link.prototype.addLink = function(layerName, start, end) {
     var layer = layers.filter(function(e) { return e.name == layerName; })[0];
-    var newLink = phsr.add.image(this.base.x, this.base.y, 'pix');
-    newLink.height = 9;
+    var graphic = start && end ? 'arrow' : 'pix';
+    print('graphic? ', start, end, graphic);
+    var newLink = phsr.add.image(this.base.x, this.base.y, graphic);
+    if (start) newLink.startPlanet = start;
+    if (end) newLink.endPlanet = end;
+    newLink.maxPassiveTimer = newLink.passiveTimer = layerName == 'military' ? .3 : 1;
+    newLink.height = layerName == 'military' ? 24 : 12;
     newLink.anchor.set(0, 0.5);
     newLink.width = this.base.width;
     newLink.rotation = this.base.rotation;
