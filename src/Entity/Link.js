@@ -30,15 +30,15 @@ Link.prototype.addLink = function(layerName, start, end) {
     var newLink = phsr.add.image(this.base.x, this.base.y, graphic);
     if (start) newLink.startPlanet = start;
     if (end) newLink.endPlanet = end;
-    if (layerName == 'military') {
+    if (layerName == 'military' || layerName == 'commerce') {
         newLink.x = start.x;
         newLink.y = start.y;
     }
-    newLink.maxPassiveTimer = newLink.passiveTimer = layerName == 'military' ? .1 : 1;
-    newLink.height = layerName == 'military' ? 24 : 12;
+    newLink.maxPassiveTimer = newLink.passiveTimer = layerName == 'military' ? .1 : .5;
+    newLink.height = (layerName == 'military' || layerName == 'commerce') ? 24 : 12;
     newLink.anchor.set(0, 0.5);
     newLink.width = this.base.width;
-    newLink.rotation = layerName == 'military' ?
+    newLink.rotation = (layerName == 'military' || layerName == 'commerce') ?
         Phaser.Math.angleBetween(start.x, start.y, end.x, end.y) :
         this.base.rotation;
     newLink.alpha = .8;

@@ -41,9 +41,9 @@ var Planet = function(id, x, y, owner) {
                     if (link['military']) link.removeLink('military');
                     else link.addLink('military', this, game.hud.lastOverPlanet);
                 }
-                else {
+                else if (this.owner == 'PLAYER' && game.hud.lastOverPlanet.owner == 'PLAYER') {
                     if (link[game.hud.selectedLayer]) link.removeLink(game.hud.selectedLayer);
-                    else link.addLink(game.hud.selectedLayer);
+                    else link.addLink(game.hud.selectedLayer, this, game.hud.lastOverPlanet);
                 }
             }
         }
@@ -108,7 +108,7 @@ Planet.prototype.sendShips = function(planetId, limit) {
         if (shipsSent++ > limit) return;
         ship.planetOrbited = null;
         var moveTween = phsr.tweens.create(ship);
-        moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 1000);
+        moveTween.to({ x: targetPlanet.x, y: targetPlanet.y }, 7000);
         moveTween.onComplete.add(function(ship) {
             ship.enterOrbit(planetId);
         });
@@ -118,19 +118,19 @@ Planet.prototype.sendShips = function(planetId, limit) {
     for (i = 0; i < limit; i++) phsr.world.add(this.orbitedBy.playerShips.getAt(0));
     // phsr.world.addMultiple(this.orbitedBy.playerShips);
 };
-Planet.prototype.sendTradeMission = function(planetId) {
-    game.money -= 500;
+Planet.prototype.sendTradeMission = function(planetId, passive) {
+    game.money -= passive ? 0 : 500;
     var targetPlanet = game.nodes.getAt(planetId);
     if (targetPlanet.id != planetId) print("ERROR");
-    var tradeVessel = phsr.add.sprite(this.x, this.y, 'pix');
+    var tradeVessel = phsr.add.sprite(this.x + phsr.rnd.between(-30, 30), this.y + phsr.rnd.between(-10, 10), 'pix');
     tradeVessel.anchor.set(0.5);
-    tradeVessel.height = 7;
-    tradeVessel.width = 7;
+    tradeVessel.height = passive ? 4 : 10;
+    tradeVessel.width = passive ? 4 : 10;
     tradeVessel.tint = 0x00ff00;
     var t = phsr.tweens.create(tradeVessel);
-    t.to({ x: targetPlanet.x, y: targetPlanet.y }, 5000);
+    t.to({ x: targetPlanet.x, y: targetPlanet.y }, passive ? 5000 : 3000);
     t.onComplete.add(function() {
-        targetPlanet.taxRate += 5;
+        targetPlanet.taxRate += passive ? .1 : 5;
         tradeVessel.destroy();
     });
     t.start();
@@ -231,6 +231,16 @@ Planet.prototype.update = function() {
             }
         }, this);
     // Trade
+    game.links.children.filter(function(link) { return link['commerce']; }, this)
+        .filter(function(link) { return link['commerce'].startPlanet == this; }, this)
+        .forEach(function(link) {
+            var cLink = link['commerce'];
+            cLink.passiveTimer -= phsr.time.physicsElapsed;
+            if (cLink.passiveTimer <= 0) {
+                cLink.passiveTimer = cLink.maxPassiveTimer;
+                this.sendTradeMission(cLink.endPlanet.id, true);
+            }
+        }, this);
 };
 
 module.exports = Planet;
