@@ -37,10 +37,14 @@ var Planet = function(id, x, y, owner) {
             print('dragged between 2 connected planets!');
             if (game.hud.selectedLayer) {
                 var link = this.getLinkBetween(this, game.hud.lastOverPlanet);
-                if (game.hud.selectedLayer == 'military')
-                    link.addLink('military', this, game.hud.lastOverPlanet);
-                else
-                    link.addLink(game.hud.selectedLayer);
+                if (game.hud.selectedLayer == 'military') {
+                    if (link['military']) link.removeLink('military');
+                    else link.addLink('military', this, game.hud.lastOverPlanet);
+                }
+                else {
+                    if (link[game.hud.selectedLayer]) link.removeLink(game.hud.selectedLayer);
+                    else link.addLink(game.hud.selectedLayer);
+                }
             }
         }
         if (!game.selectedPlanet) {
@@ -110,7 +114,9 @@ Planet.prototype.sendShips = function(planetId, limit) {
         });
         moveTween.start();
     }, this);
-    phsr.world.addMultiple(this.orbitedBy.playerShips);
+    var i;
+    for (i = 0; i < limit; i++) phsr.world.add(this.orbitedBy.playerShips.getAt(0));
+    // phsr.world.addMultiple(this.orbitedBy.playerShips);
 };
 Planet.prototype.sendTradeMission = function(planetId) {
     game.money -= 500;

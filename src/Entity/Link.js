@@ -27,15 +27,20 @@ Link.constructor = Link;
 Link.prototype.addLink = function(layerName, start, end) {
     var layer = layers.filter(function(e) { return e.name == layerName; })[0];
     var graphic = start && end ? 'arrow' : 'pix';
-    print('graphic? ', start, end, graphic);
     var newLink = phsr.add.image(this.base.x, this.base.y, graphic);
     if (start) newLink.startPlanet = start;
     if (end) newLink.endPlanet = end;
-    newLink.maxPassiveTimer = newLink.passiveTimer = layerName == 'military' ? .3 : 1;
+    if (layerName == 'military') {
+        newLink.x = start.x;
+        newLink.y = start.y;
+    }
+    newLink.maxPassiveTimer = newLink.passiveTimer = layerName == 'military' ? .1 : 1;
     newLink.height = layerName == 'military' ? 24 : 12;
     newLink.anchor.set(0, 0.5);
     newLink.width = this.base.width;
-    newLink.rotation = this.base.rotation;
+    newLink.rotation = layerName == 'military' ?
+        Phaser.Math.angleBetween(start.x, start.y, end.x, end.y) :
+        this.base.rotation;
     newLink.alpha = .8;
     newLink.tint = layer.color;
     game.layers[layerName].add(newLink);
